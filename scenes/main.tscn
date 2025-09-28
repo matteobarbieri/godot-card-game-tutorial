@@ -13,10 +13,10 @@ script = ExtResource("1_0wfyh")
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(960, 544)
 
+[node name="PlayerHand" parent="." instance=ExtResource("3_jyhfs")]
+
 [node name="CardSlot" parent="." instance=ExtResource("3_sugp2")]
 position = Vector2(256, 216)
 
 [node name="CardSlot2" parent="." instance=ExtResource("3_sugp2")]
 position = Vector2(456, 216)
-
-[node name="PlayerHand" parent="." instance=ExtResource("3_jyhfs")]
