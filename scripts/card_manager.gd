@@ -77,7 +77,8 @@ func _input(event: InputEvent) -> void:
 				start_drag(card)
 				
 		elif event.is_released():
-			finish_drag()
+			if card_being_dragged:
+				finish_drag()
 			
 func start_drag(card):
 	card.scale = Vector2(1.0, 1.0)
