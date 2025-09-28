@@ -4,6 +4,7 @@ const COLLISION_MASK_CARD = 1
 
 var screen_size
 var card_being_dragged
+var is_hovering_on_card
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -19,7 +20,34 @@ func _input(event: InputEvent) -> void:
 
 func connect_card_signals(card):
 	card.connect("hovered", on_hovered_over_card)
-	card.connect("hovered_off", on_hovered_off_over_card)
+	card.connect("hovered_off", on_hovered_off_card)
+
+
+func on_hovered_over_card(card):
+	if not is_hovering_on_card:
+		is_hovering_on_card = true
+		highlight_card(card, true)
+	
+	
+func on_hovered_off_card(card):
+	#print("Hovered off")
+	
+	highlight_card(card, false)
+	
+	var new_card_hovered = raycast_check_for_card()
+	if new_card_hovered:
+		highlight_card(new_card_hovered, true)
+	else:
+		is_hovering_on_card = false	
+	
+
+func highlight_card(card, hovered):
+	if hovered:
+		card.scale = Vector2(1.05, 1.05)
+		card.z_index = 2
+	else:
+		card.scale = Vector2(1.0, 1.0)
+		card.z_index = 1
 
 func raycast_check_for_card():
 	var space_state = get_world_2d().direct_space_state
@@ -33,10 +61,25 @@ func raycast_check_for_card():
 	
 	if result.size() > 0:
 		#print(result[0].collider.get_parent())
+		
+		return get_card_with_higher_z(result)
 		return result[0].collider.get_parent()
 	
 	return null
 
+
+func get_card_with_higher_z(result):
+	var highest_z = -999
+	var card_to_return = null
+	
+	for r in result:
+		var candidate_card = r.collider.get_parent()
+		if candidate_card.z_index > highest_z:
+			highest_z = candidate_card.z_index
+			card_to_return = candidate_card
+			
+	return card_to_return
+		
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
