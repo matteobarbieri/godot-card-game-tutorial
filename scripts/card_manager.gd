@@ -6,18 +6,6 @@ var screen_size
 var card_being_dragged
 var is_hovering_on_card
 
-func _input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.is_pressed():
-			
-			var card = raycast_check_for_card()
-			
-			if card:
-				card_being_dragged = card
-				
-		elif event.is_released():
-			card_being_dragged = null
-
 func connect_card_signals(card):
 	card.connect("hovered", on_hovered_over_card)
 	card.connect("hovered_off", on_hovered_off_card)
@@ -30,15 +18,15 @@ func on_hovered_over_card(card):
 	
 	
 func on_hovered_off_card(card):
-	#print("Hovered off")
 	
-	highlight_card(card, false)
-	
-	var new_card_hovered = raycast_check_for_card()
-	if new_card_hovered:
-		highlight_card(new_card_hovered, true)
-	else:
-		is_hovering_on_card = false	
+	if !card_being_dragged:
+		highlight_card(card, false)
+		
+		var new_card_hovered = raycast_check_for_card()
+		if new_card_hovered:
+			highlight_card(new_card_hovered, true)
+		else:
+			is_hovering_on_card = false	
 	
 
 func highlight_card(card, hovered):
@@ -80,6 +68,25 @@ func get_card_with_higher_z(result):
 			
 	return card_to_return
 		
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.is_pressed():
+			var card = raycast_check_for_card()
+			if card:
+				start_drag(card)
+				
+		elif event.is_released():
+			finish_drag()
+			
+func start_drag(card):
+	card.scale = Vector2(1.0, 1.0)
+	card_being_dragged = card
+	
+func finish_drag():
+	card_being_dragged.scale = Vector2(1.05, 1.05)
+	card_being_dragged = null
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
