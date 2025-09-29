@@ -1,16 +1,179 @@
-[gd_scene load_steps=4 format=3 uid="uid://qn03sxhxekhn"]
+[gd_scene load_steps=8 format=3 uid="uid://qn03sxhxekhn"]
 
 [ext_resource type="Script" uid="uid://ix23ueggcg0k" path="res://scripts/card.gd" id="1_6u4wf"]
 [ext_resource type="Texture2D" uid="uid://dhdoxxcv1c3a1" path="res://assets/ai_warrior_card.png" id="1_d81rb"]
+[ext_resource type="Texture2D" uid="uid://dnu1oo2by8jd6" path="res://assets/Deck.png" id="2_ktuci"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_d81rb"]
 size = Vector2(144, 224)
+
+[sub_resource type="Animation" id="Animation_6u4wf"]
+resource_name = "card_flip"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Attack:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.13333334, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(0, 0, 0, 0), Color(0, 0, 0, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Health:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.13333334, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(0, 0, 0, 0), Color(0, 0, 0, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CardImageBack:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(0.85555553, 0.86792475), Vector2(0.1, 0.868), Vector2(0.85, 0.868)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("CardImageBack:z_index")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [0, -1]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("CardImage:z_index")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [-1, 0]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("CardImage:scale")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(0.15, 0.15), Vector2(0.015, 0.15), Vector2(0.15, 0.15)]
+}
+
+[sub_resource type="Animation" id="Animation_ktuci"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Attack:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Health:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0, 0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CardImageBack:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0.85555553, 0.86792475)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("CardImageBack:z_index")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("CardImage:z_index")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [-1]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("CardImage:scale")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0.15, 0.15)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ktuci"]
+_data = {
+&"RESET": SubResource("Animation_ktuci"),
+&"card_flip": SubResource("Animation_6u4wf")
+}
 
 [node name="Card" type="Node2D"]
 position = Vector2(150, 890)
 script = ExtResource("1_6u4wf")
 
+[node name="CardImageBack" type="Sprite2D" parent="."]
+position = Vector2(3.1590462e-06, 1.5258789e-05)
+scale = Vector2(0.85555553, 0.86792475)
+texture = ExtResource("2_ktuci")
+
 [node name="CardImage" type="Sprite2D" parent="."]
+z_index = -1
 scale = Vector2(0.15, 0.15)
 texture = ExtResource("1_d81rb")
 
@@ -20,7 +183,7 @@ texture = ExtResource("1_d81rb")
 shape = SubResource("RectangleShape2D_d81rb")
 
 [node name="Attack" type="RichTextLabel" parent="."]
-modulate = Color(0, 0, 0, 1)
+modulate = Color(0, 0, 0, 0)
 offset_left = -62.0
 offset_top = 46.0
 offset_right = -22.0
@@ -30,7 +193,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Health" type="RichTextLabel" parent="."]
-modulate = Color(0, 0, 0, 1)
+modulate = Color(0, 0, 0, 0)
 offset_left = 26.0
 offset_top = 46.0
 offset_right = 66.0
@@ -38,6 +201,11 @@ offset_bottom = 86.0
 text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_ktuci")
+}
 
 [connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]
 [connection signal="mouse_exited" from="Area2D" to="." method="_on_area_2d_mouse_exited"]
