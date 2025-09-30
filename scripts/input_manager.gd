@@ -11,7 +11,8 @@ signal left_mouse_button_released
 
 func _ready() -> void:
 	card_manager_reference = %CardManager
-	deck_reference = $"../Deck"
+	#deck_reference = $"../Decks/PlayerDeck"
+	deck_reference = %PlayerDeck
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
