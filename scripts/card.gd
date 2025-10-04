@@ -23,6 +23,10 @@ func _process(delta: float) -> void:
 	pass
 
 
+func update_stats_display():
+	$Attack.text = str(attack)
+	$Health.text = str(health)
+
 func _on_area_2d_mouse_entered() -> void:
 	#print("hovered")
 	emit_signal("hovered", self)

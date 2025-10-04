@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://dm3tbom8h7oxe"]
+
+[ext_resource type="Script" uid="uid://cm00mm25xb1la" path="res://scripts/player.gd" id="1_3vyb7"]
+
+[node name="Player" type="Node"]
+script = ExtResource("1_3vyb7")
+
+[node name="Health" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0

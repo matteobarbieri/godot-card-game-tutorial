@@ -55,13 +55,8 @@ func draw_card():
 	if new_card.card_type == "Monster":
 		new_card.attack = card_database_reference.CARDS[card_drawn][0]
 		new_card.health = card_database_reference.CARDS[card_drawn][1]
-		new_card.get_node("Attack").text = str(new_card.attack)
-		new_card.get_node("Health").text = str(new_card.health)
-	
-	# TODO Change this probably
-	#new_card.position.x = 140
-	#new_card.position.y = 955
-	
+		new_card.update_stats_display()
+		
 	new_card.position.x = position.x
 	new_card.position.y = position.y
 	

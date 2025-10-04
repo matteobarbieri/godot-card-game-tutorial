@@ -1,5 +1,6 @@
 extends Node
 
+
 func _ready() -> void:
 	
 	%PlayerDeck.deck_owner = "player"
@@ -7,6 +8,11 @@ func _ready() -> void:
 	
 	%PlayerHand.hand_owner = "player"
 	%OpponentHand.hand_owner = "opponent"
+	
+	%Player.player_type = "player"
+	
+	
+	%Opponent.player_type = "opponent"
 	
 	for slot in %CardSlots.get_node("OpponentSlots").get_children():
 		slot.card_slot_owner = "opponent"

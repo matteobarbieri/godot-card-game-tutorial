@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://didlw44mrmdi0"]
+[gd_scene load_steps=10 format=3 uid="uid://didlw44mrmdi0"]
 
 [ext_resource type="Script" uid="uid://dj4rov41cwls1" path="res://scripts/card_manager.gd" id="1_0wfyh"]
 [ext_resource type="PackedScene" uid="uid://4kukslkeiitj" path="res://scenes/game_manager.tscn" id="1_o6xl0"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://clpsq474664" path="res://scripts/input_manager.gd" id="5_tbgi4"]
 [ext_resource type="Script" uid="uid://ckvro7fp4pvkm" path="res://scripts/magic_card_slot.gd" id="5_tefeu"]
 [ext_resource type="Script" uid="uid://bxhscy08stlu7" path="res://scripts/battle_manager.gd" id="8_tipki"]
+[ext_resource type="PackedScene" uid="uid://dm3tbom8h7oxe" path="res://scenes/player.tscn" id="9_85g3d"]
 
 [node name="Main" type="Node2D"]
 
@@ -150,9 +151,16 @@ position = Vector2(1780, 125)
 scale = Vector2(0.8, 0.8)
 
 [node name="BattleManager" type="Node" parent="."]
+unique_name_in_owner = true
 script = ExtResource("8_tipki")
 
 [node name="BattleTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+
+[node name="Opponent" parent="." instance=ExtResource("9_85g3d")]
+unique_name_in_owner = true
+
+[node name="Player" parent="." instance=ExtResource("9_85g3d")]
 unique_name_in_owner = true
 
 [connection signal="pressed" from="EndTurnButton" to="BattleManager" method="_on_end_turn_button_pressed"]
