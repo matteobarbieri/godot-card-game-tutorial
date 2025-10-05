@@ -1,22 +1,28 @@
 extends Node
 
 var battle_timer
-var empty_monster_card_slots = []
 var opponent_cards_on_battlefield = []
 var player_cards_on_battlefield = []
+
+func get_empty_monster_slots():
+	"""
+	Returns empty monster slots from opponents
+	"""
+	var empty_monster_card_slots = []
+	var i = 0
+	for slot in %CardSlots.get_node("OpponentSlots").get_children():
+		if i >= 5:
+			break
+		if slot.card_in_slot == null:
+			empty_monster_card_slots.append(slot)
+		i += 1
+	return empty_monster_card_slots
 
 
 func _ready() -> void:
 	battle_timer = %BattleTimer
 	battle_timer.one_shot = true
 	battle_timer.wait_time = 1.0
-	
-	var i = 0
-	for slot in %CardSlots.get_node("OpponentSlots").get_children():
-		if i >= 5:
-			break
-		empty_monster_card_slots.append(slot)
-		i += 1
 	
 func _on_end_turn_button_pressed() -> void:
 	opponent_turn()
@@ -47,8 +53,9 @@ func try_play_card_with_highest_attack():
 				chosen_card = card
 		
 		# Assign it to the slot (pick randomly)
-		var selected_slot = empty_monster_card_slots[
-			randi_range(0, empty_monster_card_slots.size()-1)]
+		var selected_slot = get_empty_monster_slots().pick_random()
+			
+		
 		
 		chosen_card.scale = Vector2(%CardManager.CARD_SMALLER_SCALE, %CardManager.CARD_SMALLER_SCALE)
 		chosen_card.z_index = 1
@@ -66,9 +73,10 @@ func try_play_card_with_highest_attack():
 		#card_being_dragged.get_node("Area2D/CollisionShape2D").disabled = true
 		selected_slot.card_in_slot = true
 		
-		empty_monster_card_slots.erase(selected_slot)
 
 func opponent_turn():
+	
+	print("empty monster slots: " + str(get_empty_monster_slots().size()))
 	$"../EndTurnButton".disabled = true
 	$"../EndTurnButton".visible = false
 
@@ -78,7 +86,7 @@ func opponent_turn():
 	await wait(1.0)
 	
 	# Check if free monster card slots, if not end turn
-	if empty_monster_card_slots.size() != 0:
+	if get_empty_monster_slots().size() != 0:
 		# Play the card in hand with highest attack
 		try_play_card_with_highest_attack()
 		
@@ -87,14 +95,15 @@ func opponent_turn():
 	
 	# Try attack
 	if opponent_cards_on_battlefield.size() > 0:
-		for card in opponent_cards_on_battlefield:
+		var opponent_cards_on_battlefield_cp = opponent_cards_on_battlefield.duplicate()
+		for card in opponent_cards_on_battlefield_cp:
 			if player_cards_on_battlefield.size() == 0:
 				# Perform a direct attack
-				direct_attack(card, "opponent")
+				await direct_attack(card, "opponent")
 			else:
-				attack(card, "opponent")
+				await attack(card, "opponent")
 				
-			await wait(0.5)
+			#await wait(0.5)
 		
 	end_opponent_turn()
 
@@ -121,9 +130,11 @@ func direct_attack(attacking_card, attacker):
 	
 	var tween = get_tree().create_tween()
 	tween.tween_property(attacking_card, "position", new_pos, 0.2)
+	await tween.finished
 	deal_direct_damage(attacking_card, target)
-	tween.tween_property(attacking_card, "position", attacking_card.card_slot_card_is_in.position, 0.2)
-	
+	var tween2 = get_tree().create_tween()
+	tween2.tween_property(attacking_card, "position", attacking_card.card_slot_card_is_in.position, 0.2)
+	await tween2.finished
 	
 
 func deal_direct_damage(card, target):
@@ -172,17 +183,30 @@ func attack(card, attacker):
 func update_card(card, owner):
 	if card.health <= 0:
 		var cards_on_battlefield_reference
+		var discard_pile_reference
 		if owner == "player":
 			cards_on_battlefield_reference = player_cards_on_battlefield
+			discard_pile_reference = %Player/DiscardPile
 		else:
 			cards_on_battlefield_reference = opponent_cards_on_battlefield
+			discard_pile_reference = %Opponent/DiscardPile
 			
 		cards_on_battlefield_reference.erase(card)
 		
 		# TODO Also put it in a discard pile?
 		card.card_slot_card_is_in.card_in_slot = null
 		card.card_slot_card_is_in = null
-		card.visible = false
+		
+		if discard_pile_reference.cards_in_discard_pile.size() == 0:
+			card.z_index = 2
+		else:
+			card.z_index = discard_pile_reference.cards_in_discard_pile[-1].z_index + 1
+		
+		var tween = get_tree().create_tween()
+		tween.tween_property(card, "position", discard_pile_reference.position, 0.2)
+		await tween.finished
+		
+		#card.visible = false
 	else:
 		card.update_stats_display()
 	
