@@ -40,7 +40,11 @@ func raycast_at_cursor():
 			var card_found = result[0].collider.get_parent()
 			
 			if card_found:
-				card_manager_reference.start_drag(card_found)
+				#card_manager_reference.start_drag(card_found)
+				if card_found.card_owner == "player":
+					card_manager_reference.card_clicked(card_found)
+				elif card_found.card_owner == "opponent":
+					%BattleManager.opponent_card_selected(card_found)
 				
 		elif result_collision_mask == COLLISION_MASK_DECK:
 			# Deck clicked

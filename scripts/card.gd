@@ -10,6 +10,7 @@ var card_owner
 
 var attack
 var health
+var has_attacked_this_turn = false
 
 
 # Called when the node enters the scene tree for the first time.

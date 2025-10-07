@@ -72,7 +72,7 @@ func draw_card():
 		new_card.get_node("AnimationPlayer").play("card_flip")
 	else:
 		# We can't interact with opponent's hands
-		new_card.get_node("Area2D").get_node("CollisionShape2D").disabled = true
+		#new_card.get_node("Area2D").get_node("CollisionShape2D").disabled = true
 		%OpponentHand.add_card_to_hand(new_card, CARD_DRAW_SPEED)
 	
 	

@@ -4,20 +4,58 @@ var battle_timer
 var opponent_cards_on_battlefield = []
 var player_cards_on_battlefield = []
 
+var is_opponents_turn = false
+
+func get_monster_slots(owner):
+	var player_reference
+	if owner == "player":
+		player_reference = %CardSlots/PlayerSlots
+	elif owner == "opponent":
+		player_reference = %CardSlots/OpponentSlots
+	else:
+		assert(false)
+		
+	var slots_reference = player_reference.get_children()
+
+	var i = 0
+	
+	var monster_slots = []
+	
+	for slot in slots_reference:
+		if i >= 5:
+			break
+		monster_slots.append(slot)
+		i += 1
+	return monster_slots
+	
+	
+#func get_empty_monster_slots2():
+	#"""
+	#Returns empty monster slots from opponents
+	#"""
+	#var empty_monster_card_slots = []
+	#
+	#var i = 0
+	#for slot in %CardSlots.get_node("OpponentSlots").get_children():
+		#if i >= 5:
+			#break
+		#if slot.card_in_slot == null:
+			#empty_monster_card_slots.append(slot)
+		#i += 1
+	#return empty_monster_card_slots
+
 func get_empty_monster_slots():
 	"""
 	Returns empty monster slots from opponents
 	"""
+	var all_monster_slots = get_monster_slots("opponent")
 	var empty_monster_card_slots = []
-	var i = 0
-	for slot in %CardSlots.get_node("OpponentSlots").get_children():
-		if i >= 5:
-			break
+	
+	for slot in all_monster_slots:
 		if slot.card_in_slot == null:
 			empty_monster_card_slots.append(slot)
-		i += 1
+	
 	return empty_monster_card_slots
-
 
 func _ready() -> void:
 	battle_timer = %BattleTimer
@@ -25,16 +63,40 @@ func _ready() -> void:
 	battle_timer.wait_time = 1.0
 	
 func _on_end_turn_button_pressed() -> void:
+	is_opponents_turn = true
 	opponent_turn()
+	
+	%CardManager.unselect_selected_monster()
+	
+	refresh_player_cards()
+	
+	
+	
 
 func end_opponent_turn():
 	# End turn
 	# Reset player deck draw
 	$"../EndTurnButton".disabled = false
 	$"../EndTurnButton".visible = true
-	
+	is_opponents_turn = false
 	%PlayerDeck.drawn_card_this_turn = false
 	%CardManager.played_monster_card_this_turn = false
+	
+
+func opponent_card_selected(defending_card):
+	var attacking_card = %CardManager.selected_monster
+	if attacking_card and defending_card in opponent_cards_on_battlefield:
+		attack(attacking_card, "player", defending_card)
+		%CardManager.selected_monster = null
+		
+	
+	
+func refresh_player_cards() -> void:
+	var all_monster_slots = get_monster_slots("player")
+	
+	for slot in all_monster_slots:
+		if slot.card_in_slot != null:
+			slot.card_in_slot.has_attacked_this_turn = false
 	
 
 func try_play_card_with_highest_attack():
@@ -71,7 +133,7 @@ func try_play_card_with_highest_attack():
 		chosen_card.get_node("AnimationPlayer").play("card_flip")
 		
 		#card_being_dragged.get_node("Area2D/CollisionShape2D").disabled = true
-		selected_slot.card_in_slot = true
+		selected_slot.card_in_slot = chosen_card
 		
 
 func opponent_turn():
@@ -149,7 +211,7 @@ func deal_direct_damage(card, target):
 	player_reference.health -= card.attack
 	player_reference.update_health()
 	
-func attack(card, attacker):
+func attack(card, attacker, target_card = null):
 	var valid_card_targets_reference
 	var defender
 	
@@ -159,9 +221,10 @@ func attack(card, attacker):
 	else:
 		valid_card_targets_reference = player_cards_on_battlefield
 		defender = "player"
+		#var target_card = valid_card_targets_reference[randi_range(0, valid_card_targets_reference.size() - 1)]
+		target_card = valid_card_targets_reference.pick_random()
 	
-	#var target_card = valid_card_targets_reference[randi_range(0, valid_card_targets_reference.size() - 1)]
-	var target_card = valid_card_targets_reference.pick_random()
+	
 	
 	# TODO Tween animation to move the card towards target
 	
@@ -193,9 +256,14 @@ func update_card(card, owner):
 			
 		cards_on_battlefield_reference.erase(card)
 		
-		# TODO Also put it in a discard pile?
+		# Also put it in a discard pile?
 		card.card_slot_card_is_in.card_in_slot = null
+		card.card_slot_card_is_in.get_node("Area2D/CollisionShape2D").disabled = false
 		card.card_slot_card_is_in = null
+		
+		# Disable card's collision
+		card.get_node("Area2D/CollisionShape2D").disabled = true
+		
 		
 		if discard_pile_reference.cards_in_discard_pile.size() == 0:
 			card.z_index = 2

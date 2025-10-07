@@ -15,18 +15,25 @@ var player_hand_reference
 
 var played_monster_card_this_turn = false
 
+var selected_monster
+
 func connect_card_signals(card):
 	card.connect("hovered", on_hovered_over_card)
 	card.connect("hovered_off", on_hovered_off_card)
 
 
 func on_hovered_over_card(card):
+	if card.card_slot_card_is_in:
+		return
 	if not is_hovering_on_card:
 		is_hovering_on_card = true
 		highlight_card(card, true)
 	
 	
 func on_hovered_off_card(card):
+	
+	if card.health <= 0:
+		return
 	
 	if !card.card_slot_card_is_in and !card_being_dragged :
 		highlight_card(card, false)
@@ -94,17 +101,50 @@ func get_card_with_higher_z(result):
 	return card_to_return
 		
 
-#func _input(event: InputEvent) -> void:
-	#if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		#if event.is_pressed():
-			#var card = raycast_check_for_card()
-			#if card:
-				#start_drag(card)
-				#
-		#elif event.is_released():
-			#if card_being_dragged:
-				#finish_drag()
-			
+func card_clicked(card):
+	
+	print("Card clicked!")
+	
+	if card.card_slot_card_is_in:
+		if %BattleManager.is_opponents_turn == false:
+			if card.has_attacked_this_turn:
+				return
+			if %BattleManager.opponent_cards_on_battlefield.size() == 0:
+				%BattleManager.direct_attack(card, "player")
+				card.has_attacked_this_turn = true
+				return
+			else:
+				select_card_for_battle(card)
+		
+		pass
+	else:
+		start_drag(card)
+
+
+func unselect_selected_monster() -> void :
+	if selected_monster:
+		selected_monster.position.y += 20
+		selected_monster = null
+	
+
+func select_card_for_battle(card):
+	
+	# Toggle selected card
+	if selected_monster:
+		# TODO this could probably be improved
+		if selected_monster == card:
+			card.position.y += 20
+			selected_monster = null
+		else:
+			selected_monster.position.y += 20
+			selected_monster = card
+			card.position.y -= 20
+	else:
+		selected_monster = card
+		card.position.y -= 20
+	
+	
+
 func start_drag(card):
 	card.scale = Vector2(DEFAULT_CARD_SCALE, DEFAULT_CARD_SCALE)
 	card_being_dragged = card
@@ -129,8 +169,9 @@ func finish_drag():
 				
 				# Card dropped in empty card slot
 				card_being_dragged.position = card_slot_found.position
-				card_being_dragged.get_node("Area2D/CollisionShape2D").disabled = true
-				card_slot_found.card_in_slot = true
+				#card_being_dragged.get_node("Area2D/CollisionShape2D").disabled = true
+				card_slot_found.card_in_slot = card_being_dragged
+				card_slot_found.get_node("Area2D/CollisionShape2D").disabled = true
 				%BattleManager.player_cards_on_battlefield.append(card_being_dragged)
 				card_being_dragged = null
 				return
